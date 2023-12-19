@@ -1,122 +1,105 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../../pull_down_button.dart';
+import '_dynamic_color.dart';
 import '_fonts.dart';
 
-/// Defines the visual properties of the titles in pull-down menus.
+// ignore_for_file: prefer_constructors_over_static_methods
+
+/// Defines the visual properties of titles in iOS like menus.
 ///
-/// Is used by [PullDownMenuTitle].
+/// Is used by [MenuTitle].
 ///
-/// All [PullDownMenuTitleTheme] properties are `null` by default. When null,
-/// the pull-down menu will use iOS 16 defaults specified in
-/// [PullDownMenuTitleTheme.defaults].
+/// Typically a [MenuTitleTheme] is specified as part of the overall
+/// [UIMenuTheme] with [UIMenuTheme.titleTheme].
+///
+/// All [MenuTitleTheme] properties are `null` by default. When null, defined
+/// earlier use cases will use the values from [UIMenuTheme] if they exist,
+/// otherwise it will use iOS 17 defaults specified in
+/// [MenuTitleTheme.defaults].
 @immutable
-class PullDownMenuTitleTheme with Diagnosticable {
-  /// Creates the set of properties used to configure [PullDownMenuTitleTheme].
-  const PullDownMenuTitleTheme({
-    this.style,
+final class MenuTitleTheme with Diagnosticable {
+  /// Creates the set of properties used to configure [MenuTitleTheme].
+  const MenuTitleTheme({
+    this.textStyle,
   });
 
-  /// Creates default set of properties used to configure
-  /// [PullDownMenuTitleTheme].
+  /// Creates default set of properties used to configure [MenuTitleTheme].
   ///
   /// Default properties were taken from the Apple Design Resources Sketch file.
   ///
   /// See also:
   ///
   /// * Apple Design Resources Sketch file:
-  ///   https://developer.apple.com/design/resources/
+  /// <https://developer.apple.com/design/resources/>
   @internal
-  const factory PullDownMenuTitleTheme.defaults(BuildContext context) =
-      _PullDownMenuTitleDefaults;
+  const factory MenuTitleTheme.defaults(BuildContext context) = _Defaults;
 
-  /// The text style of title in the pull-down menu.
-  final TextStyle? style;
-
-  /// The [PullDownButtonTheme.titleTheme] property of the ambient
-  /// [PullDownButtonTheme].
-  static PullDownMenuTitleTheme? maybeOf(BuildContext context) =>
-      PullDownButtonTheme.maybeOf(context)?.titleTheme;
-
-  /// The helper method to quickly resolve [PullDownMenuTitleTheme] from
-  /// [PullDownButtonTheme.titleTheme] or [PullDownMenuTitleTheme.defaults]
-  /// as well as from theme data from [PullDownMenuTitle].
-  @internal
-  static PullDownMenuTitleTheme resolve(
-    BuildContext context, {
-    required TextStyle? titleStyle,
-  }) {
-    final theme = PullDownMenuTitleTheme.maybeOf(context);
-    final defaults = PullDownMenuTitleTheme.defaults(context);
-
-    return PullDownMenuTitleTheme(
-      style: defaults.style!.merge(theme?.style).merge(titleStyle),
-    );
-  }
+  /// The text style of title in menu.
+  final TextStyle? textStyle;
 
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
-  PullDownMenuTitleTheme copyWith({
-    TextStyle? style,
+  MenuTitleTheme copyWith({
+    TextStyle? textStyle,
   }) =>
-      PullDownMenuTitleTheme(
-        style: style ?? this.style,
+      MenuTitleTheme(
+        textStyle: textStyle ?? this.textStyle,
       );
 
-  /// Linearly interpolate between two themes.
-  static PullDownMenuTitleTheme lerp(
-    PullDownMenuTitleTheme? a,
-    PullDownMenuTitleTheme? b,
+  /// Linearly interpolate between two menu title themes.
+  static MenuTitleTheme lerp(
+    MenuTitleTheme? a,
+    MenuTitleTheme? b,
     double t,
   ) {
     if (identical(a, b) && a != null) return a;
 
-    return PullDownMenuTitleTheme(
-      style: TextStyle.lerp(a?.style, b?.style, t),
+    return MenuTitleTheme(
+      textStyle: TextStyle.lerp(a?.textStyle, b?.textStyle, t),
     );
   }
 
   @override
-  int get hashCode => Object.hashAll([style]);
+  int get hashCode => textStyle.hashCode;
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
+    if (other is! MenuTitleTheme) return false;
 
-    return other is PullDownMenuTitleTheme && other.style == style;
+    return other.textStyle == textStyle;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-      DiagnosticsProperty('style', style, defaultValue: null),
+      DiagnosticsProperty('textStyle', textStyle, defaultValue: null),
     );
   }
 }
 
-/// A set of default values for [PullDownMenuTitleTheme].
+/// A set of default values for [MenuTitleTheme].
+// TODO(notDmDrl): Recheck values with a new iOS 17 sketch file.
 @immutable
-class _PullDownMenuTitleDefaults extends PullDownMenuTitleTheme {
-  /// Creates [_PullDownMenuTitleDefaults].
-  const _PullDownMenuTitleDefaults(this.context);
+final class _Defaults extends MenuTitleTheme {
+  /// Creates [_Defaults].
+  const _Defaults(this.context);
 
-  /// A build context used to resolve [CupertinoDynamicColor]s defined in this
+  /// A build context used to resolve [SimpleDynamicColor]s defined in this
   /// theme.
   final BuildContext context;
 
-  /// The light and dark colors of [PullDownMenuTitle.title].
-  static const kTitleColor = CupertinoDynamicColor.withBrightness(
+  /// The light and dark colors of [MenuTitle.title].
+  static const kTitleColor = SimpleDynamicColor(
     color: Color.fromRGBO(60, 60, 67, 0.6),
     darkColor: Color.fromRGBO(235, 235, 245, 0.6),
   );
 
-  /// The [PullDownMenuTitleTheme.style] as a constant.
-  ///
-  /// [style] will resolve [kStyle] with [kTitleColor] applied.
+  /// The text style of [MenuTitle.title].
   static const kStyle = TextStyle(
     inherit: false,
     fontFamily: kFontFamily,
@@ -128,7 +111,7 @@ class _PullDownMenuTitleDefaults extends PullDownMenuTitleTheme {
   );
 
   @override
-  TextStyle get style => kStyle.copyWith(
+  TextStyle? get textStyle => kStyle.copyWith(
         color: kTitleColor.resolveFrom(context),
       );
 }

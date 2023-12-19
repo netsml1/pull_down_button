@@ -1,19 +1,39 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
-/// A widget used to create a leading widget for pull-down menu items while
+import '../menu_items/entry.dart';
+
+/// An [AnimatedContainer] with predefined [duration] and [curve].
+///
+/// Is used to animate a container on text scale factor change.
+@internal
+class AnimatedMenuContainer extends AnimatedContainer {
+  /// Creates [AnimatedMenuContainer].
+  AnimatedMenuContainer({
+    super.key,
+    super.constraints,
+    super.alignment,
+    super.padding,
+    required super.child,
+  }) : super(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.fastOutSlowIn,
+        );
+}
+
+/// A widget used to create a leading widget for [UIMenuEntry] items while
 /// complying with layouts defined in the Apple Design Resources Sketch file.
 ///
 /// See also:
 ///
 /// * Apple Design Resources Sketch file:
-///   https://developer.apple.com/design/resources/
+/// <https://developer.apple.com/design/resources/>
 @immutable
 @internal
-class LeadingWidgetBox extends StatelessWidget {
-  /// Creates [LeadingWidgetBox].
-  const LeadingWidgetBox({
+class LeadingWidgetLayout extends StatelessWidget {
+  /// Creates [LeadingWidgetLayout].
+  const LeadingWidgetLayout({
     super.key,
     this.child,
     this.height,
@@ -25,7 +45,7 @@ class LeadingWidgetBox extends StatelessWidget {
   /// If non-null, requires the child to have exactly this height.
   final double? height;
 
-  /// The width of [LeadingWidgetBox].
+  /// The width of [LeadingWidgetLayout].
   static const double _kLeadingWidth = 20;
 
   @override
@@ -41,13 +61,13 @@ class LeadingWidgetBox extends StatelessWidget {
       );
 }
 
-/// A widget used to create a icon widget for pull-down menu items while
+/// A widget used to create a icon widget for [UIMenuEntry] items while
 /// complying with layouts defined in the Apple Design Resources Sketch file.
 ///
 /// See also:
 ///
 /// * Apple Design Resources Sketch file:
-///   https://developer.apple.com/design/resources/
+/// <https://developer.apple.com/design/resources/>
 @immutable
 @internal
 class IconBox extends StatelessWidget {
@@ -75,50 +95,42 @@ class IconBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    // TODO(notDmDrl): migrate to textScalarOf.
+    final textScaleFactor = MediaQuery.textScaleFactorOf(context);
 
-    if (_isSmall) {
-      return _TextScaledSizedBox(
-        height: 18,
-        width: 18,
-        child: Center(
-          child: IconTheme.merge(
-            data: IconThemeData(
-              color: color,
-              size: 17 * textScaleFactor,
-            ),
-            child: child,
-          ),
-        ),
-      );
-    }
+    final (double height, double width, double size) = switch (_isSmall) {
+      true => (18, 18, 17),
+      false => (22, 20, 22),
+    };
 
     return _TextScaledSizedBox(
-      height: 22,
-      width: 20,
-      child: IconTheme.merge(
-        data: IconThemeData(
-          color: color,
-          size: 22 * textScaleFactor,
+      height: height,
+      width: width,
+      child: Center(
+        child: IconTheme.merge(
+          data: IconThemeData(
+            color: color,
+            size: size * textScaleFactor,
+          ),
+          child: child,
         ),
-        child: child,
       ),
     );
   }
 }
 
-/// A widget used to create a icon widget for pull-down header items while
+/// A widget used to create a icon widget for [MenuHeader] while
 /// complying with layouts defined in the Apple Design Resources Sketch file.
 ///
 /// See also:
 ///
 /// * Apple Design Resources Sketch file:
-///   https://developer.apple.com/design/resources/
+/// <https://developer.apple.com/design/resources/>
 @immutable
 @internal
-class IconActionBox extends StatelessWidget {
-  /// Creates [IconActionBox].
-  const IconActionBox({
+class MenuHeaderIconLayout extends StatelessWidget {
+  /// Creates [MenuHeaderIconLayout].
+  const MenuHeaderIconLayout({
     super.key,
     required this.child,
     required this.color,
@@ -130,25 +142,25 @@ class IconActionBox extends StatelessWidget {
   /// The color of icon.
   final Color? color;
 
-  /// The size of [IconActionBox].
+  /// The size of [MenuHeaderIconLayout].
   static const double _kSize = 28;
 
-  @override
-  Widget build(BuildContext context) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+  /// The size of icon at the default text scale factor.
+  static const double _kIconSize = 17;
 
-    return _TextScaledSizedBox(
-      height: _kSize,
-      width: _kSize,
-      child: IconTheme.merge(
-        data: IconThemeData(
-          color: color,
-          size: 17 * textScaleFactor,
+  @override
+  Widget build(BuildContext context) => _TextScaledSizedBox(
+        height: _kSize,
+        width: _kSize,
+        child: IconTheme.merge(
+          data: IconThemeData(
+            color: color,
+            // TODO(notDmDrl): migrate to textScalarOf.
+            size: MediaQuery.textScaleFactorOf(context) * _kIconSize,
+          ),
+          child: child,
         ),
-        child: child,
-      ),
-    );
-  }
+      );
 }
 
 /// Rework of [SizedBox] with text scale factor applied internally.
@@ -168,7 +180,8 @@ class _TextScaledSizedBox extends SingleChildRenderObjectWidget {
   final double? height;
 
   BoxConstraints _additionalConstraints(BuildContext context) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    // TODO(notDmDrl): migrate to textScalarOf.
+    final textScaleFactor = MediaQuery.textScaleFactorOf(context);
 
     return BoxConstraints.tightFor(
       width: width != null ? width! * textScaleFactor : null,

@@ -1,164 +1,91 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../../pull_down_button.dart';
+import '../menu_items/entry.dart';
 import 'content_size_category.dart';
 
-/// Used to configure how the [PullDownMenuActionsRow] shows its
-/// [PullDownMenuItem]'s and their maximum count.
-///
-/// See also:
-///
-/// * preferredElementSize:
-///   https://developer.apple.com/documentation/uikit/uimenu/4013313-preferredelementsize
-@internal
-enum ElementSize {
-  /// Compact layout, icon-only representation.
-  ///
-  /// Maximum 4 items.
-  small,
-
-  /// Medium layout, icon and title vertically aligned.
-  ///
-  /// Maximum 3 items.
-  medium,
-
-  /// Large layout, title and icon horizontally aligned.
-  large;
-
-  /// Minimum allowed height for [ElementSize.large] and [ElementSize.small].
-  ///
-  /// [ElementSize.large] should use returned value as a `minHeight` for its
-  /// constraints. [ElementSize.small] should use returned value as a fixed
-  /// height.
-  ///
-  /// Values were resolved based on a direct comparison with the native variant
-  /// for each [ContentSizeCategory].
-  ///
-  /// Base is 44px ([kMinInteractiveDimensionCupertino]).
-  static double resolveLarge(BuildContext context) {
-    final level = ContentSizeCategory.of(context);
-
-    switch (level) {
-      case ContentSizeCategory.extraSmall:
-        return 38;
-      case ContentSizeCategory.small:
-        return 40;
-      case ContentSizeCategory.medium:
-        return 42;
-      case ContentSizeCategory.large:
-        return 44;
-      case ContentSizeCategory.extraLarge:
-        return 48;
-      case ContentSizeCategory.extraExtraLarge:
-        return 52;
-      case ContentSizeCategory.extraExtraExtraLarge:
-        return 58;
-      case ContentSizeCategory.accessibilityMedium:
-        return 68;
-      case ContentSizeCategory.accessibilityLarge:
-        return 80;
-      case ContentSizeCategory.accessibilityExtraLarge:
-        return 96;
-      case ContentSizeCategory.accessibilityExtraExtraLarge:
-        return 112;
-      case ContentSizeCategory.accessibilityExtraExtraExtraLarge:
-        return 124;
-    }
-  }
-
-  /// Minimum allowed height for [ElementSize.large] with a subtitle.
-  ///
-  /// [ElementSize.large] should use returned value as a `minHeight` for its
-  /// constraints.
-  ///
-  /// Values were eyeballed based on a direct comparison with the native variant
-  /// for each [ContentSizeCategory].
-  ///
-  /// Returned value is always 1.45 times bigger than [resolveLarge].
-  ///
-  /// Base is 64px.
-  static double resolveLargeWithSubtitle(BuildContext context) =>
-      (resolveLarge(context) * 1.45).ceilToDouble();
-
-  /// Minimum allowed height for [ElementSize.medium].
-  ///
-  /// [ElementSize.medium] should use returned value as a fixed height.
-  ///
-  /// Values were eyeballed based on a direct comparison with the native variant
-  /// for each [ContentSizeCategory].
-  ///
-  /// Returned value is always 1.36 times bigger than [resolveLarge].
-  ///
-  /// Base is 60px.
-  static double resolveMedium(BuildContext context) =>
-      (resolveLarge(context) * 1.36).ceilToDouble();
-}
-
-/// An inherited widget used to indicate current [ElementSize] configuration.
-///
-/// Is internally used by [PullDownMenuActionsRow] to provide [ElementSize] to
-/// all descendant [PullDownMenuItem]s.
-@immutable
-@internal
-class ActionsRowSizeConfig extends InheritedWidget {
-  /// Creates [ActionsRowSizeConfig].
-  const ActionsRowSizeConfig({
-    super.key,
-    required super.child,
-    required this.size,
-  });
-
-  /// The display type of actions in [PullDownMenuActionsRow].
-  final ElementSize size;
-
-  /// Returns the current [ElementSize] from [PullDownMenuActionsRow]
-  /// configuration from the closest [ActionsRowSizeConfig] ancestor.
-  ///
-  /// If there is no ancestor, it returns [ElementSize.large].
-  static ElementSize of(BuildContext context) =>
-      context
-          .dependOnInheritedWidgetOfExactType<ActionsRowSizeConfig>()
-          ?.size ??
-      ElementSize.large;
-
-  @override
-  bool updateShouldNotify(ActionsRowSizeConfig oldWidget) =>
-      size != oldWidget.size;
+enum _MenuConfigAspect {
+  hasLeading,
+  hasTrailing,
+  theme,
+  contentSize,
 }
 
 /// An inherited widget used to provide menu configuration to all its descendant
-/// widgets,
-///
-/// Is internally used by [PullDownButton], [showPullDownMenu], or
-/// [PullDownMenu].
+/// widgets.
 @immutable
 @internal
-class MenuConfig extends InheritedWidget {
+final class MenuConfig extends InheritedModel<_MenuConfigAspect> {
   /// Creates [MenuConfig].
   const MenuConfig({
     super.key,
     required super.child,
     required this.hasLeading,
+    required this.hasTrailing,
+    required this.ambientTheme,
+    required this.contentSizeCategory,
   });
 
-  /// Whether the pull-down menu has any [PullDownMenuItem]s with leading
-  /// widget such as chevron.
+  /// Whether the menu has any [UIMenuEntry] widgets with leading widget such
+  /// as a checkmark.
   final bool hasLeading;
 
-  /// Used to determine if the menu has any items with a leading widget.
-  static bool menuHasLeading(List<PullDownMenuEntry> items) =>
-      items.whereType<PullDownMenuItem>().any(
-            (element) => element.selected != null,
-          );
+  /// Whether the menu has any [UIMenuEntry] widgets with trailing widget such
+  /// as a chevron.
+  final bool hasTrailing;
 
-  /// Returns a [bool] value indicating whether menu has any
-  /// [PullDownMenuItem]s  with leading widget from the closest [MenuConfig]
+  /// An ambient [UIMenuTheme] returned by [UIMenuTheme.ambientOf].
+  final UIMenuTheme ambientTheme;
+
+  /// Current text scale level.
+  final ContentSizeCategory contentSizeCategory;
+
+  static MenuConfig _of(BuildContext context, _MenuConfigAspect aspect) =>
+      InheritedModel.inheritFrom<MenuConfig>(context, aspect: aspect)!;
+
+  /// Returns a [bool] value indicating whether menu has any [UIMenuEntry]s with
+  /// leading widget from the closest [MenuConfig] ancestor.
+  static bool hasLeadingOf(BuildContext context) =>
+      _of(context, _MenuConfigAspect.hasLeading).hasLeading;
+
+  /// Returns a [bool] value indicating whether menu has any [UIMenuEntry]s with
+  /// trailing widget from the closest [MenuConfig] ancestor.
+  static bool hasTrailingOf(BuildContext context) =>
+      _of(context, _MenuConfigAspect.hasTrailing).hasTrailing;
+
+  /// Returns a [UIMenuTheme] value from the closest [MenuConfig] ancestor.
+  static UIMenuTheme ambientThemeOf(BuildContext context) =>
+      _of(context, _MenuConfigAspect.theme).ambientTheme;
+
+  /// Returns a [ContentSizeCategory] value from the closest [MenuConfig]
   /// ancestor.
-  static bool of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<MenuConfig>()!.hasLeading;
+  static ContentSizeCategory contentSizeCategoryOf(BuildContext context) =>
+      _of(context, _MenuConfigAspect.contentSize).contentSizeCategory;
 
   @override
   bool updateShouldNotify(MenuConfig oldWidget) =>
-      hasLeading != oldWidget.hasLeading;
+      hasLeading != oldWidget.hasLeading ||
+      hasTrailing != oldWidget.hasTrailing ||
+      ambientTheme != oldWidget.ambientTheme ||
+      contentSizeCategory != oldWidget.contentSizeCategory;
+
+  @override
+  bool updateShouldNotifyDependent(
+    MenuConfig oldWidget,
+    Set<Object> dependencies,
+  ) {
+    for (final dependency in dependencies) {
+      if (dependency is _MenuConfigAspect) {
+        return switch (dependency) {
+          _MenuConfigAspect.hasLeading => hasLeading != oldWidget.hasLeading,
+          _MenuConfigAspect.hasTrailing => hasTrailing != oldWidget.hasTrailing,
+          _MenuConfigAspect.theme => ambientTheme != oldWidget.ambientTheme,
+          _MenuConfigAspect.contentSize =>
+            contentSizeCategory != oldWidget.contentSizeCategory,
+        };
+      }
+    }
+
+    return false;
+  }
 }

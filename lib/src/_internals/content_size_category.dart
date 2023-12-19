@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-import '../items/entry.dart';
-import 'animation.dart';
+import '../menu_items/entry.dart';
 
+// TODO(notDmDrl): recheck values with iOS 17
+// TODO(notDmDrl): migrate to textScalerOf
 /// Text scale levels available in iOS 16 accessibility menu.
 ///
 /// The value of each level was taken by writing down values returned by
-/// `MediaQuery.of(context).textScaleFactor`.
+/// `MediaQuery.textScaleFactorOf(context)`.
 ///
 /// [ContentSizeCategory.large] is the default value.
 ///
-/// Those values are used to resolve heights of various [PullDownMenuEntry].
+/// Those values are used to resolve heights of various [UIMenuEntry].
 ///
 /// See also:
 ///
 /// * preferredContentSizeCategory:
-///   https://developer.apple.com/documentation/uikit/uiapplication/1623048-preferredcontentsizecategory
+/// <https://developer.apple.com/documentation/uikit/uiapplication/1623048-preferredcontentsizecategory>
 /// * UIContentSizeCategory:
-///   https://developer.apple.com/documentation/uikit/uicontentsizecategory
+/// <https://developer.apple.com/documentation/uikit/uicontentsizecategory>
 @internal
 enum ContentSizeCategory {
   /// An extra-small font.
@@ -104,21 +105,13 @@ enum ContentSizeCategory {
   /// The [ContentSizeCategory] from the closest [MediaQuery] instance that
   /// encloses the given context.
   static ContentSizeCategory of(BuildContext context) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final textScaleFactor = MediaQuery.textScaleFactorOf(context);
 
     return ContentSizeCategory.values.firstWhere(
       (element) => element.textScaleFactor >= textScaleFactor,
-      orElse: () => ContentSizeCategory.large,
+      orElse: () => large,
     );
   }
-}
-
-/// A set of text scale related utils.
-///
-/// All of the values were eyeballed using the iOS 16 Simulator.
-@internal
-abstract class TextUtils {
-  const TextUtils._();
 
   /// Utility method for resolving if current text scale factor is bigger
   /// than [ContentSizeCategory.extraExtraExtraLarge]. At this text scale
@@ -127,24 +120,6 @@ abstract class TextUtils {
   /// Required text scale factor was deducted using the iPhone 14 Pro Max and
   /// iPhone SE (3rd gen) iOS 16 Simulators.
   static bool isInAccessibilityMode(BuildContext context) =>
-      MediaQuery.of(context).textScaleFactor >
-      ContentSizeCategory.extraExtraExtraLarge.textScaleFactor;
-}
-
-/// An [AnimatedContainer] with predefined [duration] and [curve].
-///
-/// Is used to animate a container on text scale factor change.
-@internal
-class AnimatedMenuContainer extends AnimatedContainer {
-  /// Creates [AnimatedMenuContainer].
-  AnimatedMenuContainer({
-    super.key,
-    super.constraints,
-    super.alignment,
-    super.padding,
-    required super.child,
-  }) : super(
-          duration: AnimationUtils.kMenuDuration,
-          curve: Curves.fastOutSlowIn,
-        );
+      MediaQuery.textScaleFactorOf(context) >
+      extraExtraExtraLarge.textScaleFactor;
 }
