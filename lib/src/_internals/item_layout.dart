@@ -76,14 +76,14 @@ class IconBox extends StatelessWidget {
     super.key,
     this.color,
     required this.child,
-  }) : _isSmall = false;
+  }) : _config = const (height: 22, width: 20, size: 22);
 
   /// Creates [IconBox.small].
   const IconBox.small({
     super.key,
     this.color,
     required this.child,
-  }) : _isSmall = true;
+  }) : _config = const (height: 18, width: 18, size: 17);
 
   /// The widget below this widget in the tree.
   final Widget child;
@@ -91,26 +91,22 @@ class IconBox extends StatelessWidget {
   /// The color of icon widget.
   final Color? color;
 
-  final bool _isSmall;
+  /// The icons dimensions.
+  final ({double height, double width, double size}) _config;
 
   @override
   Widget build(BuildContext context) {
     // TODO(notDmDrl): migrate to textScalarOf.
     final textScaleFactor = MediaQuery.textScaleFactorOf(context);
 
-    final (double height, double width, double size) = switch (_isSmall) {
-      true => (18, 18, 17),
-      false => (22, 20, 22),
-    };
-
     return _TextScaledSizedBox(
-      height: height,
-      width: width,
+      height: _config.height,
+      width: _config.width,
       child: Center(
         child: IconTheme.merge(
           data: IconThemeData(
             color: color,
-            size: size * textScaleFactor,
+            size: _config.size * textScaleFactor,
           ),
           child: child,
         ),
