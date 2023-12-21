@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 import '../menu_items/divider.dart';
 import '_dynamic_color.dart';
+import 'theme.dart';
 
 // ignore_for_file: prefer_constructors_over_static_methods
 

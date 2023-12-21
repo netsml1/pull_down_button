@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+import '../_internals/brightness.dart';
+
 /// Base class for entries in an iOS like menus.
 @immutable
 abstract interface class UIMenuEntry extends Widget {
@@ -15,13 +17,9 @@ abstract interface class UIMenuEntry extends Widget {
   /// Opacity values were based on a direct pixel-to-pixel comparison with the
   /// native variant.
   @internal
-  static double disabledOpacityOf(BuildContext context) {
-    final brightness = CupertinoTheme.maybeBrightnessOf(context) ??
-        Theme.of(context).brightness;
-
-    return switch (brightness) {
-      Brightness.dark => 0.55,
-      Brightness.light => 0.45,
-    };
-  }
+  static double disabledOpacityOf(BuildContext context) =>
+      switch (menuBrightnessOf(context)) {
+        Brightness.dark => 0.55,
+        Brightness.light => 0.45,
+      };
 }

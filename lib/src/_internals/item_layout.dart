@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
 import '../menu_items/entry.dart';
+import 'animation.dart';
 
 /// An [AnimatedContainer] with predefined [duration] and [curve].
 ///
@@ -17,8 +18,8 @@ class AnimatedMenuContainer extends AnimatedContainer {
     super.padding,
     required super.child,
   }) : super(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.fastOutSlowIn,
+          duration: UIMenuAnimation.kDuration,
+          curve: UIMenuAnimation.kOnSizeChangeCurve,
         );
 }
 

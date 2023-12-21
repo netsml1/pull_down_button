@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+
+import '../_internals/brightness.dart';
 
 /// Simplified copy of [CupertinoDynamicColor] used to hold two [Color] values
 /// for light and dark themes.
@@ -20,13 +21,9 @@ final class SimpleDynamicColor {
   final Color darkColor;
 
   /// Resolves this [SimpleDynamicColor] using the provided [BuildContext].
-  Color resolveFrom(BuildContext context) {
-    final brightness = CupertinoTheme.maybeBrightnessOf(context) ??
-        Theme.of(context).brightness;
-
-    return switch (brightness) {
-      Brightness.light => color,
-      Brightness.dark => darkColor,
-    };
-  }
+  Color resolveFrom(BuildContext context) =>
+      switch (menuBrightnessOf(context)) {
+        Brightness.light => color,
+        Brightness.dark => darkColor,
+      };
 }

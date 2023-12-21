@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../menu_items/entry.dart';
+import '../theme/theme.dart';
 import 'content_size_category.dart';
 
 enum _MenuConfigAspect {

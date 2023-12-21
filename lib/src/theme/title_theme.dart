@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 import '_dynamic_color.dart';
 import '_fonts.dart';
+import 'theme.dart';
 
 // ignore_for_file: prefer_constructors_over_static_methods
 
