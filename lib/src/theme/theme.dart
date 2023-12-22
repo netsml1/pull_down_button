@@ -1,10 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
+import '../menu_items/divider.dart';
 import '../menu_items/entry.dart';
+import '../menu_items/title.dart';
 import 'divider_theme.dart';
 import 'title_theme.dart';
+
+// ignore_for_file: prefer_constructors_over_static_methods
 
 T? _lerpType<T>(T? a, T? b, double t) => t < 0.5 ? a : b;
 
@@ -33,6 +38,20 @@ final class UIMenuTheme extends ThemeExtension<UIMenuTheme>
   ///
   /// For more control over [UIMenuTheme] configuration consider using
   /// [UIMenuTheme.raw].
+  ///
+  /// Properties available for customization:
+  ///
+  /// * [fontFamily] - font family of [UIMenuEntry] items in menu.
+  /// * [backgroundColor] - background color of iOS like menus. If
+  /// [backgroundColor] is not fully opaque, blur will be added to menu's
+  /// background.
+  /// * [onBackgroundColor] - color of [UIMenuEntry] labels.
+  /// * [onBackgroundColorVariant] - color of lower priority labels such as
+  /// [MenuTitle.title] text color.
+  /// * [dividerColor] - color of large dividers ([MenuDivider]).
+  /// * [separatorColor] - color of small dividers between menu items
+  /// ([MenuSeparator]).
+  /// * [destructiveColor] - color of destructive action [UIMenuEntry] labels.
   factory UIMenuTheme({
     String? fontFamily,
     Color? backgroundColor,
@@ -81,8 +100,25 @@ final class UIMenuTheme extends ThemeExtension<UIMenuTheme>
       UIMenuInheritedTheme.maybeOf(context) ??
       Theme.of(context).extension<UIMenuTheme>();
 
-  // TODO(notDmDrl): todo.
-  static UIMenuTheme ambientOf(BuildContext context) {}
+  /// The helper constructor to resolve [UIMenuTheme] by mixing non-null values
+  /// from each sub-themes from ambient [UIMenuTheme] with their respective
+  /// default values.
+  @internal
+  static UIMenuTheme ambientOf(BuildContext context) {
+    final ambientTheme = UIMenuTheme.maybeOf(context);
+
+    if (ambientTheme == null) {
+      return UIMenuTheme.raw(
+        dividerTheme: MenuDividerTheme.defaults(context),
+        titleTheme: MenuTitleTheme.defaults(context),
+      );
+    }
+
+    return UIMenuTheme.raw(
+      dividerTheme: _resolveDivider(context, ambientTheme.dividerTheme),
+      titleTheme: _resolveTitle(context, ambientTheme.titleTheme),
+    );
+  }
 
   @override
   ThemeExtension<UIMenuTheme> copyWith({
@@ -174,4 +210,35 @@ class UIMenuInheritedTheme extends InheritedTheme {
         data: data,
         child: child,
       );
+}
+
+/// Resolves [MenuDividerTheme] with current [ambient] divider theme.
+MenuDividerTheme _resolveDivider(
+  BuildContext context,
+  MenuDividerTheme? ambient,
+) {
+  final defaults = MenuDividerTheme.defaults(context);
+
+  if (ambient == null) return defaults;
+  if (ambient.separatorColor != null && ambient.dividerColor != null) {
+    return ambient;
+  }
+
+  return defaults.copyWith(
+    dividerColor: ambient.dividerColor,
+    separatorColor: ambient.separatorColor,
+  );
+}
+
+/// Resolves [MenuTitleTheme] with current [ambient] title theme.
+MenuTitleTheme _resolveTitle(
+  BuildContext context,
+  MenuTitleTheme? ambient,
+) {
+  final defaults = MenuTitleTheme.defaults(context);
+
+  if (ambient == null) return defaults;
+  if (ambient.textStyle != null) return ambient;
+
+  return defaults;
 }

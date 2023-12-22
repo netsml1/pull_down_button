@@ -20,4 +20,9 @@
 /// https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons
 library pull_down_button;
 
+export 'src/menu_items/divider.dart' hide MenuSeparator;
 export 'src/menu_items/entry.dart';
+export 'src/menu_items/title.dart';
+export 'src/theme/divider_theme.dart';
+export 'src/theme/theme.dart';
+export 'src/theme/title_theme.dart';

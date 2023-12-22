@@ -27,15 +27,12 @@ class MenuDivider extends StatelessWidget implements UIMenuEntry {
   final Color? color;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = MenuConfig.ambientThemeOf(context).dividerTheme!;
-
-    return Divider(
-      height: _kDividerHeight,
-      thickness: _kDividerHeight,
-      color: color ?? theme.dividerColor,
-    );
-  }
+  Widget build(BuildContext context) => Divider(
+        height: _kDividerHeight,
+        thickness: _kDividerHeight,
+        color: color ??
+            MenuConfig.ambientThemeOf(context).dividerTheme!.dividerColor,
+      );
 }
 
 /// A separator for iOS like menus.
