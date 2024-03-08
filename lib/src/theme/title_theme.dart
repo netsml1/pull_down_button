@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../menu_items/title.dart';
+import '_defaults.dart';
 import '_dynamic_color.dart';
-import '_fonts.dart';
 import 'theme.dart';
 
 // ignore_for_file: prefer_constructors_over_static_methods
@@ -29,11 +29,12 @@ final class MenuTitleTheme with Diagnosticable {
 
   /// Creates default set of properties used to configure [MenuTitleTheme].
   ///
-  /// Default properties were taken from the Apple Design Resources Sketch file.
+  /// Default properties were taken from the Apple Design Resources Sketch and
+  /// Figma libraries for iOS 17 and iPadOS 17.
   ///
   /// See also:
   ///
-  /// * Apple Design Resources Sketch file:
+  /// * Apple Design Resources Sketch and Figma libraries:
   /// <https://developer.apple.com/design/resources/>
   @internal
   const factory MenuTitleTheme.defaults(BuildContext context) = _Defaults;
@@ -85,7 +86,6 @@ final class MenuTitleTheme with Diagnosticable {
 }
 
 /// A set of default values for [MenuTitleTheme].
-// TODO(notDmDrl): Recheck values with a new iOS 17 sketch file.
 @immutable
 final class _Defaults extends MenuTitleTheme {
   /// Creates [_Defaults].
@@ -97,23 +97,12 @@ final class _Defaults extends MenuTitleTheme {
 
   /// The light and dark colors of [MenuTitle.title].
   static const kTitleColor = SimpleDynamicColor(
-    color: Color.fromRGBO(60, 60, 67, 0.6),
-    darkColor: Color.fromRGBO(235, 235, 245, 0.6),
-  );
-
-  /// The text style of [MenuTitle.title].
-  static const kStyle = TextStyle(
-    inherit: false,
-    fontFamily: kFontFamily,
-    fontFamilyFallback: kFontFallbacks,
-    fontSize: 12,
-    height: 16 / 12,
-    fontWeight: FontWeight.w400,
-    textBaseline: TextBaseline.alphabetic,
+    color: ColorThemeDefaults.kLabelSecondaryLight,
+    darkColor: ColorThemeDefaults.kLabelSecondaryDark,
   );
 
   @override
-  TextStyle? get textStyle => kStyle.copyWith(
+  TextStyle? get textStyle => TextStyleThemeDefaults.kCaption1.copyWith(
         color: kTitleColor.resolveFrom(context),
       );
 }

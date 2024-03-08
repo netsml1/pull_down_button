@@ -24,12 +24,12 @@ enum ElementSize {
   /// Compact layout, small icon-only representation.
   ///
   /// Maximum 6 items.
-  palette(_resolveLarge),
+  palette(_resolveSmall),
 
   /// Compact layout, icon-only representation.
   ///
   /// Maximum 4 items.
-  small(_resolveLarge),
+  small(_resolveSmall),
 
   /// Medium layout, icon and title vertically aligned.
   ///
@@ -83,6 +83,25 @@ double _resolveLarge(ContentSizeCategory category) => switch (category) {
       ContentSizeCategory.accessibilityExtraExtraLarge => 112,
       ContentSizeCategory.accessibilityExtraExtraExtraLarge => 124
     };
+
+/// Minimum allowed height for [ElementSize.small].
+///
+/// [ElementSize.small] should use returned value as a fixed height.
+///
+/// Values were eyeballed based on a direct comparison with the native variant
+/// for each [ContentSizeCategory].
+///
+/// Returned value is always 1.2 times bigger than [_resolveLarge].
+///
+/// Base is 53px. Base value was resolved based on layouts defined in the
+/// Apple Design Resources Sketch file.
+///
+/// See also:
+///
+/// * Apple Design Resources Sketch file:
+/// <https://developer.apple.com/design/resources>.
+double _resolveSmall(ContentSizeCategory category) =>
+    (_resolveLarge(category) * 1.2).ceilToDouble();
 
 /// Minimum allowed height for [ElementSize.medium].
 ///

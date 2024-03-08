@@ -7,8 +7,8 @@
 ///
 /// To use, import `package:pull_down_button/pull_down_button.dart`.
 ///
-/// All widgets were recreated using Apple Design Resources Sketch library for
-/// iOS 17 and iPadOS 17 from <https://developer.apple.com/design/resources/>.
+/// All widgets were recreated using Apple Design Resources Sketch and Figma
+/// libraries for iOS 17 and iPadOS 17 from <https://developer.apple.com/design/resources/>.
 ///
 /// See also:
 ///
@@ -26,3 +26,13 @@ export 'src/menu_items/title.dart';
 export 'src/theme/divider_theme.dart';
 export 'src/theme/theme.dart';
 export 'src/theme/title_theme.dart';
+
+// TODO(notDmDrl): remove on release
+// template string
+// Apple Design Resources Sketch and Figma libraries for iOS 17 and iPadOS 17 from <https://developer.apple.com/design/resources/>.
+
+/// Default properties were taken from the Apple Design Resources Sketch and
+/// Figma libraries for iOS 17 and iPadOS 17.
+
+/// * Apple Design Resources Sketch and Figma libraries:
+/// <https://developer.apple.com/design/resources/>

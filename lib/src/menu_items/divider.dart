@@ -1,4 +1,3 @@
-// The values were taken from the Apple Design Resources Sketch file.
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -6,8 +5,9 @@ import '../_internals/menu_config.dart';
 import '../theme/divider_theme.dart';
 import 'entry.dart';
 
+// The values were taken from the Apple Design Resources Sketch file.
 const double _kDividerHeight = 8;
-const double _kSeparatorHeight = 0;
+const double _kSeparatorHeight = 0.5;
 
 /// A horizontal divider for iOS like menus.
 ///

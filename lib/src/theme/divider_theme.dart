@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 import '../menu_items/divider.dart';
+import '_defaults.dart';
 import '_dynamic_color.dart';
 import 'theme.dart';
 
@@ -30,11 +31,12 @@ final class MenuDividerTheme with Diagnosticable {
 
   /// Creates default set of properties used to configure [MenuDividerTheme].
   ///
-  /// Default properties were taken from the Apple Design Resources Sketch file.
+  /// Default properties were taken from the Apple Design Resources Sketch and
+  /// Figma libraries for iOS 17 and iPadOS 17.
   ///
   /// See also:
   ///
-  /// * Apple Design Resources Sketch file:
+  /// * Apple Design Resources Sketch and Figma libraries:
   /// <https://developer.apple.com/design/resources/>
   @internal
   const factory MenuDividerTheme.defaults(BuildContext context) = _Defaults;
@@ -94,7 +96,6 @@ final class MenuDividerTheme with Diagnosticable {
 }
 
 /// A set of default values for [MenuDividerTheme].
-// TODO(notDmDrl): Recheck values with a new iOS 17 sketch file.
 @immutable
 final class _Defaults extends MenuDividerTheme {
   /// Creates [_Defaults].
@@ -106,14 +107,14 @@ final class _Defaults extends MenuDividerTheme {
 
   /// The light and dark colors of the [MenuDivider].
   static const kDividerColor = SimpleDynamicColor(
-    color: Color.fromRGBO(17, 17, 17, 0.3),
-    darkColor: Color.fromRGBO(217, 217, 217, 0.3),
+    color: ColorThemeDefaults.kDividerLight,
+    darkColor: ColorThemeDefaults.kDividerDark,
   );
 
   /// The light and dark colors of the horizontal and vertical separators.
   static const kSeparatorColor = SimpleDynamicColor(
-    color: Color.fromRGBO(0, 0, 0, 0.08),
-    darkColor: Color.fromRGBO(0, 0, 0, 0.16),
+    color: ColorThemeDefaults.kSeparatorLight,
+    darkColor: ColorThemeDefaults.kSeparatorDark,
   );
 
   @override
